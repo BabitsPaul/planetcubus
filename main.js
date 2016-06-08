@@ -38,13 +38,14 @@ function render() {
         1.0, -1.0,
         1.0, 1.0]);
 
+		/*
     const arr = new Float32Array([1, 0, 0, 1,
         0, 1, 0, 1,
         0, 0, 1, 1,
         0, 0, 1, 1,
         0, 1, 0, 1,
         0, 0, 0, 1]);
-
+		*/
 
 
     //request another call as soon as possible
@@ -61,3 +62,128 @@ loadResources({
     //render one frame
     render();
 });
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// render context                                                                          //
+//                                                                                         //
+//                                                                                         //
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// SceneGraph                                                                              //
+//                                                                                         //
+//                                                                                         //
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+class SceneGraphNode
+{
+	constructor()
+	{
+		this.children = [];
+	}
+
+	append(child)
+	{
+		this.children.push(child);
+	}
+
+	remove(child)
+	{
+		index = this.children.indexOf(child);
+
+		if(index != -1)
+		{
+			this.children.splice(index, 1);
+		}
+	}
+
+	render(context)
+	{
+		console.log("Rendering "+ this);
+
+		for each (var child in children)
+		{
+			child.render(context);
+		}
+	}
+}
+
+class TransformationNode
+	extends SceneGraphNode
+{
+	constructor(matrix)
+	{
+		super();
+		this.translation = matrix;
+	}
+
+	setMatrix(matrix)
+	{
+		this.matrix = matrix;
+	}
+
+	render(context)
+	{
+		backupMatrix = context.sceneMatrix;
+
+		context.sceneMatrix = mat4.multiply(context.sceneMatrix, this.matrix);
+		for each (var child in children)
+		{
+			child.render(context);
+		}
+
+		context.sceneMatrix = backupMatrix;
+	}
+}
+
+class ShaderNode
+	extends SceneGraphNode
+{
+	constructor(shader)
+	{
+		super();
+
+		this.shader = shader;
+	}
+
+	setShader(shader)
+	{
+		this.shader = shader;
+	}
+
+	render(context)
+	{
+		backupShader = context.shader;
+
+		context.shader = this.shader;
+		for each (var child in children)
+		{
+			child.render(context);
+		}
+
+		context.shader = this.shader;
+	}
+}
+
+class ModelRenderNode
+	extends SceneGraphNode
+{
+	constructor(model)
+	{
+		super();
+
+		this.model = model;
+	}
+
+	setModel(model)
+	{
+		this.model = model;
+	}
+
+	render(context)
+	{
+		TODO
+	}
+}
