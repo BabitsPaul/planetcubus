@@ -70,31 +70,71 @@ function buildSceneGraph()
 	root = sg.root();
 
 	//center of solar system
-	var center_t = sg.translate(0, 0, -9);
-	root.append(center_t);
+	var center = sg.translate(0, 0, -9);
+	root.append(center);
 
-	//center of solar system
-	var rotate_c = sg.autoRotate(0.4, 0.2, 0.6);
-	center_t.append(rotate_c);
-	rotate_c.append(sg.drawCube());
+	var planet1 = createObject(sg.drawCube(), 1, 45, 45);
+	var planet1Orbit = createOrbitingObject(planet1, 4, 2, 20, 0);
+	center.append(planet1Orbit);
 
-	//first planet
-	var rotate_1 = sg.autoRotate(0.1, 2, 0);
-	var radius_1 = sg.translate(0, 0, 5);
-	center_t.append(rotate_1);
-	rotate_1.append(radius_1);
-	radius_1.append(sg.drawCube());
+	var planet2 = createObject(sg.drawCube(), 0.5, 45, 45);
+	var planet2Orbit = createOrbitingObject(planet2, 6, 1.5, 20, 0);
+	center.append(planet2Orbit);
 
-	//moon of first planet
-	var rotate_1_m_o_1 = sg.rotateX(90);
-	var rotate_1_m_r_1 = sg.autoRotate(2, 0, 0);
-	var radius_1_m_r_1 = sg.translate(2, 0, 0);
-	var scale_1_m_1 = sg.scale(0.4, 0.4, 0.4);
-	radius_1.append(rotate_1_m_o_1);
-	rotate_1_m_o_1.append(rotate_1_m_r_1);
-	rotate_1_m_r_1.append(radius_1_m_r_1);
-	rotate_1_m_r_1.append(scale_1_m_1);
-	scale_1_m_1.append(sg.drawCube());
+	var moon1_1 = createObject(sg.drawCube(), 0.5, 45, 45, 0.5, 0.5, 0.5);
+	var moon1_1Orbit = createOrbitingObject(moon1_1, 3, 0.5, 25, 45);
+	planet2.append(moon1_1Orbit);
+}
+
+/*
+* center: object around with the created object circles
+* obj: object that rotates around center
+* radius: radius of the orbit
+* rS: rotation-speed on orbit
+* otx: orbital tilt of object on x-axis (z-x-plane as reference = 0deg)
+* otz: orbital tilt of object on z-axis (z-x-plane as reference = 0deg)
+*/
+function createOrbitingObject(obj, radius , rS, oTx, oTz)
+{
+	var rotation = sg.autoRotate(0, rS, 0);
+	var orbitalTiltX = sg.rotateX(oTx);
+	var orbitalTiltZ = sg.rotateZ(oTz);
+	var translate = sg.translate(radius, 0, 0);
+
+	orbitalTiltX.append(orbitalTiltZ);
+	orbitalTiltZ.append(rotation);
+	rotation.append(translate);
+	translate.append(obj);
+
+	return orbitalTiltX;
+}
+
+/*
+* obj: animated object
+* rS: rotation-speed around y-axis
+* atx: axial tilt, on x-axis (z-x-plane as reference)
+* atz: axial tilt, on z-axis (z-x-plane as reference)
+*/
+function createObject(obj, rS, aTx, aTz , sX, sY, sZ)
+{
+	sX = sX || 1;
+	sY = sY || 1;
+	sZ = sZ || 1;
+
+	aTx = aTx || 0;
+	aTz = aTz || 0;
+
+	var axialTiltX = sg.rotateX(aTx);
+	var axialTiltZ = sg.rotateZ(aTz);
+	var selfRotation = sg.autoRotate(0, rS, 0);
+	var scaling = sg.scale(sX, sY, sZ);
+
+	axialTiltX.append(axialTiltZ);
+	axialTiltZ.append(selfRotation);
+	selfRotation.append(scaling);
+	scaling.append(obj);
+
+	return axialTiltX;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -150,6 +190,9 @@ function draw()
 var lastTime = new Date().getTime();
 var elapsedSinceLastTick;
 
+//regulates the overall speed of the animation
+var totalSpeed = .1;		//TESTING PURPOSE ONLY
+
 function animate()
 {
 	var timeNow = new Date().getTime();
@@ -170,9 +213,9 @@ function autoRotateMatrix(rsX, rsY, rsZ)
 	toUpdate.push(function(dt){
 		var tmp = node.matrix;
 
-		mat4.rotateX(tmp, tmp, rsX * dt / 1000.);
-		mat4.rotateY(tmp, tmp, rsY * dt / 1000.);
-		mat4.rotateZ(tmp, tmp, rsZ * dt / 1000.);
+		mat4.rotateX(tmp, tmp, rsX * dt / 1000. * totalSpeed);
+		mat4.rotateY(tmp, tmp, rsY * dt / 1000. * totalSpeed);
+		mat4.rotateZ(tmp, tmp, rsZ * dt / 1000. * totalSpeed);
 
 		node.matrix = tmp;
 	});
