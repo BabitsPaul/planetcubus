@@ -1,4 +1,5 @@
-var rotateSensitivity = .0005;
+//calibration
+var rotateSensitivity = .003;
 var moveSensivity = .1;
 
 var cameraMat;
@@ -41,10 +42,10 @@ function initUI(canvas)
 
 	canvas.addEventListener('mousemove', function(event){
 		if(mouse.pressed && mouse.pos.x && mouse.pos.y){
-			rotateCamera(event.clientX - mouse.pos.x, event.clientY - mouse.pos.y);
+			rotateCamera(event.clientY - mouse.pos.y, event.clientX - mouse.pos.x);
 
 			mouse.pos.x = event.clientX;
-			mouse.pros.y = event.clientY;
+			mouse.pos.y = event.clientY;
 		}
 	});
 
@@ -81,7 +82,6 @@ function initUI(canvas)
 */
 function moveCamera(dx, dz)
 {
-	console.log("Rotating");
 	mat4.translate(cameraMat, cameraMat, [dx * moveSensivity, 0, dz * moveSensivity]);
 }
 
