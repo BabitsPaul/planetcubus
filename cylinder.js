@@ -1,13 +1,17 @@
 function buildCylinder(radius, height, density, colorTop, colorSide, colorBottom)
 {
-	var verticesTop = [0, 0, height / 2],
-		verticesBottom = [0, 0, -height / 2],
+	var verticesTop = [],
+		verticesBottom = [],
 		verticesSide = [];
 
-	for(var i = 0; i <= Math.PI * 2; i += Math.PI / (density * 2))
+	for(var i = 0; i < Math.PI * 2; i += Math.PI * 2 / density)
 	{
-		verticesTop.push(Math.sin(i), -height /2, Math.cos(i));
-		verticesBottom.push(Math.sin(i), height / 2, Math.cos(i));
+		verticesTop.push(Math.cos(i), -height /2, Math.sin(i));
+		verticesBottom.push(Math.cos(i), height / 2, Math.sin(i));
+	}
+
+	for(var i = 0; i <= Math.PI * 2; i += Math.PI * 2 / density)
+	{
 		verticesSide.push(Math.sin(i), -height /2, Math.cos(i));
 		verticesSide.push(Math.sin(i), height / 2, Math.cos(i));
 	}
@@ -40,14 +44,14 @@ function buildCylinder(radius, height, density, colorTop, colorSide, colorBottom
 			bottomColorArr = [];
 		for(var i = 0; i < cylinderTopBuffer.numItems; i++)
 		{
-			topColorArr.push(colorTop);
-			bottomColorArr.push(colorBottom);
+			topColorArr.push(colorTop[0], colorTop[1], colorTop[2], colorTop[3]);
+			bottomColorArr.push(colorBottom[0], colorBottom[1], colorBottom[2], colorBottom[3]);
 		}
 
 		var sideColorArr = [];
 		for(var i = 0 ; i < cylinderSideBuffer.numItems ; i++)
 		{
-			sideColorArr.push(colorSide);
+			sideColorArr.push(colorSide[0], colorSide[1], colorSide[2], colorSide[3]);
 		}
 
 		cylinderColorTopBuffer = gl.createBuffer();
@@ -95,7 +99,6 @@ function buildCylinder(radius, height, density, colorTop, colorSide, colorBottom
 		gl.vertexAttribPointer(context.shader.vertexPositionAttribute, cylinder.bottom.itemSize, gl.FLOAT, false, 0, 0);
 
 		gl.drawArrays(gl.TRIANGLE_FAN, 0, cylinder.bottom.numItems);
-
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, cylinder.sideColor);
 		gl.vertexAttribPointer(context.shader.vertexColorAttribute, cylinder.sideColor.itemSize, gl.FLOAT, false, 0, 0);

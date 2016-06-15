@@ -81,9 +81,9 @@ function buildSceneGraph()
 
 	center.append(sg.draw(buildCylinder(2, 5, 40, [1, 0, 0, 1], [0, 1, 0, 1], [0, 0, 1, 1])));
 
-	/*
 	center.append(sg.drawCoordSys());
 
+	/*
 	center.append(createPlanet(sg.drawCube(), 1, 45, 45).top);
 
 	var planet1 = createPlanet(sg.drawCube(), 1, 45, 45);

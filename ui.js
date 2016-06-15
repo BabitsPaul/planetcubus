@@ -93,11 +93,15 @@ function initUI(canvas)
 */
 function moveCamera(dx, dz)
 {
+	cameraPosition = mat4.translate(mat4.create(), cameraPosition, [dx * moveSensivity, 0, dz * moveSensivity]);
+
+	/*
 	//TODO reacts properly, until camera is rotated
 	var tmp = mat4.translate(mat4.create(), mat4.create(), [dx * moveSensivity, 0, dz * moveSensivity]);
 	tmp = mat4.multiply(mat4.create(), cameraOrientation, tmp);
 
 	cameraPosition = mat4.multiply(mat4.create(), cameraPosition, cameraOrientation);
+	*/
 
 	cameraTransformNode.matrix = cameraPosition;//mat4.multiply(mat4.create(), cameraPosition, cameraOrientation);
 }
