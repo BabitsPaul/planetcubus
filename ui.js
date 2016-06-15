@@ -62,17 +62,17 @@ function initUI(canvas)
 	document.addEventListener('keypress', function(event){
 		var consumed = true;
 
-		switch(event.key){
-			case "ArrowDown":
+		switch(event.code){
+			case "KeyS":
 				moveCamera(0, 1);
 			break;
-			case "ArrowUp":
+			case "KeyW":
 				moveCamera(0, -1);
 			break;
-			case "ArrowLeft":
+			case "KeyA":
 				moveCamera(-1, 0);
 			break;
-			case "ArrowRight":
+			case "KeyD":
 				moveCamera(1, 0);
 			break;
 			default:

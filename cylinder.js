@@ -10,7 +10,8 @@ function buildCylinder(radius, height, density, colorTop, colorSide, colorBottom
 		verticesBottom.push(Math.sin(i), height / 2, Math.cos(i));
 	}
 
-	for(var i = 0; i <= Math.PI * 2; i += Math.PI * 2 / density)
+	var upper = Math.PI * 2 + 1 * Math.PI * 2 / density;
+	for(var i = 0; i < upper; i += Math.PI * 2 / density)
 	{
 		verticesSide.push(Math.sin(i), -height /2, Math.cos(i));
 		verticesSide.push(Math.sin(i), height / 2, Math.cos(i));
