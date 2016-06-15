@@ -73,29 +73,32 @@ function buildSceneGraph()
 {
 	root = sg.root();
 
-	//root.append(sg.drawCoordSys);
 	root.append(cameraTransformNode);
 
 	//center of solar system
 	var center = sg.translate(0, 0, -9);
 	cameraTransformNode.append(center);
 
-	center.append(createObject(sg.drawCube(), 1, 45, 45));
+	center.append(sg.draw(buildCylinder(2, 5, 40, [1, 0, 0, 1], [0, 1, 0, 1], [0, 0, 1, 1])));
 
-	var planet1 = createObject(sg.drawCube(), 1, 45, 45);
-	var planet1Orbit = createOrbitingObject(planet1, 4, 2, 20, 0);
-	center.append(planet1Orbit);
+	/*
+	center.append(sg.drawCoordSys());
 
-	var planet2 = createObject(sg.drawCube(), 0.5, 45, 45);
-	var planet2Orbit = createOrbitingObject(planet2, 6, 1.5, 20, 0);
-	center.append(planet2Orbit);
+	center.append(createPlanet(sg.drawCube(), 1, 45, 45).top);
 
-	var moon1_1 = createObject(sg.drawCube(), 0.5, 45, 45, 0.5, 0.5, 0.5);
-	var moon1_1Orbit = createOrbitingObject(moon1_1, 3, 0.5, 0, 0);
-	planet2.append(moon1_1Orbit);
+	var planet1 = createPlanet(sg.drawCube(), 1, 45, 45);
+	var planet1Orbit = createPlanetOrbit(planet1.top, 4, 2, 20, 0);
+	center.append(planet1Orbit.top);
+
+	var planet2 = createPlanet(sg.drawCube(), 0.5, 45, 45);
+	var planet2Orbit = createPlanetOrbit(planet2.top, 6, 1.5, 20, 0);
+	center.append(planet2Orbit.top);
+
+	var moon1_1 = createPlanet(sg.drawCube(), 0.5, 45, 45, 0.5, 0.5, 0.5);
+	var moon1_1Orbit = createPlanetOrbit(moon1_1.top, 3, 0.5, 0, 0);
+	planet2.top.append(moon1_1Orbit.top);
+	*/
 }
-
-//TODO incorrectly appended, orbiting objects rely on rotation of object
 
 /*
 * obj: object that orbits around an implicit center (0,0,0)
@@ -103,12 +106,17 @@ function buildSceneGraph()
 * rS: rotation-speed on orbit
 * otx: orbital tilt of object on x-axis (z-x-plane as reference = 0deg)
 * otz: orbital tilt of object on z-axis (z-x-plane as reference = 0deg)
+*
+* return: {
+*	top = this node is the child node that gets added to parents
+*	bottom = and children should be appended to this node, to avoid uninteded effects to child-nodes (scaling, rotation, etc.)
+* }
 */
-function createOrbitingObject(obj, radius , rS, oTx, oTz)
+function createPlanetOrbit(obj, radius , rS, oTx, oTz)
 {
-	var rotation = sg.autoRotate(0, rS, 0);
 	var orbitalTiltX = sg.rotateX(oTx);
 	var orbitalTiltZ = sg.rotateZ(oTz);
+	var rotation = sg.autoRotate(0, rS, 0);
 	var translate = sg.translate(radius, 0, 0);
 
 	orbitalTiltX.append(orbitalTiltZ);
@@ -116,7 +124,10 @@ function createOrbitingObject(obj, radius , rS, oTx, oTz)
 	rotation.append(translate);
 	translate.append(obj);
 
-	return orbitalTiltX;
+	return {
+		top: orbitalTiltX,
+		bottom: translate
+	};
 }
 
 /*
@@ -124,8 +135,13 @@ function createOrbitingObject(obj, radius , rS, oTx, oTz)
 * rS: rotation-speed around y-axis
 * atx: axial tilt, on x-axis (z-x-plane as reference)
 * atz: axial tilt, on z-axis (z-x-plane as reference)
+*
+* return: {
+*	top = this node is the child node that gets added to parents
+*	bottom = and children should be appended to this node, to avoid uninteded effects to child-nodes (scaling, rotation, etc.)
+* }
 */
-function createObject(obj, rS, aTx, aTz , sX, sY, sZ)
+function createPlanet(obj, rS, aTx, aTz , sX, sY, sZ)
 {
 	sX = sX || 1;
 	sY = sY || 1;
@@ -144,7 +160,10 @@ function createObject(obj, rS, aTx, aTz , sX, sY, sZ)
 	selfRotation.append(scaling);
 	scaling.append(obj);
 
-	return axialTiltX;
+	return {
+		top: axialTiltX,
+		bottom: axialTiltZ
+	};
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -184,11 +203,6 @@ function tick()
 
 function draw()
 {
-	drawCoordSys(context);
-
-	//refresh view matrix
-	updateViewMatrix(context);
-
 	//setup viewport and clear canvas
 	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);

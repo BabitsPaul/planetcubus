@@ -2,17 +2,18 @@
 var rotateSensitivity = .003;
 var moveSensivity = .1;
 
-var	cameraPosition,
-	cameraOrientation;
-
 var mouse;
 
 var cameraTransformNode;
 
-function updateViewMatrix(context)
-{
-	cameraTransformNode.matrix = mat4.multiply(mat4.create(), cameraPosition, cameraOrientation);
-}
+/*
+var rotateX,
+	rotateY,
+	pos;
+*/
+
+var cameraPosition,
+	cameraOrientation;
 
 function initUI(canvas)
 {
@@ -27,8 +28,13 @@ function initUI(canvas)
 
 	cameraTransformNode = new TransformationSGNode(mat4.create());
 
-	cameraPosition = mat4.create();
-	cameraOrientation = mat4.create();
+	/*
+	rotateX = rotateY = 0;
+	pos = [0, 0, 0];
+	*/
+
+	cameraPosition = mat4.identity(mat4.create());
+	cameraOrientation = mat4.identity(mat4.create());
 
 	canvas.addEventListener('mousedown' , function(event){
 		mouse.pressed = true;
@@ -87,10 +93,13 @@ function initUI(canvas)
 */
 function moveCamera(dx, dz)
 {
-	var move = mat4.translate(mat4.create(), mat4.create(), [dx * moveSensivity, 0, dz * moveSensivity]);
-	move = mat4.multiply(mat4.create(), move, cameraOrientation);
+	//TODO reacts properly, until camera is rotated
+	var tmp = mat4.translate(mat4.create(), mat4.create(), [dx * moveSensivity, 0, dz * moveSensivity]);
+	tmp = mat4.multiply(mat4.create(), cameraOrientation, tmp);
 
-	cameraPosition = mat4.multiply(mat4.create(), cameraPosition, move);
+	cameraPosition = mat4.multiply(mat4.create(), cameraPosition, cameraOrientation);
+
+	cameraTransformNode.matrix = cameraPosition;//mat4.multiply(mat4.create(), cameraPosition, cameraOrientation);
 }
 
 /*
@@ -99,6 +108,10 @@ function moveCamera(dx, dz)
 */
 function rotateCamera(dalpha, dbeta)
 {
-	cameraOrientation = mat4.rotateX(mat4.create(), cameraOrientation, dalpha * rotateSensitivity);
-	cameraOrientation = mat4.rotateY(mat4.create(), cameraOrientation, dbeta * rotateSensitivity);
+	var tmp = mat4.rotateX(mat4.create(), mat4.create(), dalpha * rotateSensitivity);
+	tmp = mat4.rotateY(mat4.create(), tmp, dbeta * rotateSensitivity);
+
+	cameraOrientation = mat4.multiply(mat4.create(), cameraOrientation, tmp);
+
+	cameraTransformNode.matrix = mat4.multiply(mat4.create(), cameraTransformNode.matrix, tmp);
 }

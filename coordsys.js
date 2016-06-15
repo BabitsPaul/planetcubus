@@ -1,3 +1,5 @@
+//TESTING PURPOSE ONLY
+
 //calibration
 var axisLength = 5;
 var xAxisColor = [1, 0, 0, 1],
@@ -12,9 +14,9 @@ function initCoordSys()
 		colorBuffer;
 
 	var vertices = [
-		0, 0, 0,	axisLength, 0, 0,	//x-axis
-		0, 0, 0,	0, axisLength, 0,	//y-axis
-		0, 0, 0,	0, 0, axisLength	//z-axis
+		-axisLength, 0, 0,	axisLength, 0, 0,	//x-axis
+		0, -axisLength, 0,	0, axisLength, 0,	//y-axis
+		0, 0, -axisLength,	0, 0, axisLength	//z-axis
 	];
 
 	var colors = [].concat(
@@ -22,9 +24,6 @@ function initCoordSys()
 		yAxisColor, yAxisColor,
 		zAxisColor, zAxisColor
 	);
-
-	console.log(colors.length);
-	console.log(vertices.length)
 
 	vertexBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
@@ -45,6 +44,6 @@ function initCoordSys()
 		gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
 		gl.vertexAttribPointer(context.shader.vertexPositionAttribute, vertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-		gl.drawArrays(gl.LINES, vertexBuffer.numItems, gl.FLOAT);
+		gl.drawArrays(gl.LINES, 0, vertexBuffer.numItems);
 	}
 }
