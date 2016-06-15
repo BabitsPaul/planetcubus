@@ -1,19 +1,16 @@
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cube                                                                                                   //
-//                                                                                                        //
-//                                                                                                        //
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//calibration
+var size = 0.5;
 
-var cubeVertexBuffer,
-	cubeVertexColorBuffer,
-	cubeVertexIndexBuffer,
-	cubeVertexNormalBuffer;
+var drawCube;
 
 function initCube()
 {
-	var size = 0.5;
+	var cubeVertexBuffer,
+		cubeVertexColorBuffer,
+		cubeVertexIndexBuffer,
+		cubeVertexNormalBuffer;
 
-	cubeVertices = new Float32Array([
+	cubeVertices = [
 		size, size, size, //right top front			0		right
 		size, size, size, //						1		top
 		size, size, size, //						2		front
@@ -45,7 +42,7 @@ function initCube()
 		-size, -size, -size, //left bottom back		21		left
 		-size, -size, -size, //						22		bottom
 		-size, -size, -size  //						23		back
-	]);
+	];
 
 	var cubeColors = [		//TESTING PURPOSE ONLY
 		0, 0, 0, 1,
@@ -115,38 +112,39 @@ function initCube()
 		1.0, 0.0
 	];
 
-	var normals = [1, 0, 0,
-				0, 1, 0,
-				0, 0, 1,
+	var normals = [
+		1, 0, 0,
+		0, 1, 0,
+		0, 0, 1,
 
-				1, 0, 0,
-				0, 1, 0,
-				0, 0, -1,
+		1, 0, 0,
+		0, 1, 0,
+		0, 0, -1,
 
-				1, 0, 0,
-				0, -1, 0,
-				0, 0, 1,
+		1, 0, 0,
+		0, -1, 0,
+		0, 0, 1,
 
-				1, 0, 0,
-				0, -1, 0,
-				0, 0, -1,
+		1, 0, 0,
+		0, -1, 0,
+		0, 0, -1,
 
-				-1, 0, 0,
-				0, 1, 0,
-				0, 0, 1,
+		-1, 0, 0,
+		0, 1, 0,
+		0, 0, 1,
 
-				-1, 0, 0,
-				0, 1, 0,
-				0, 0, -1,
+		-1, 0, 0,
+		0, 1, 0,
+		0, 0, -1,
 
-				-1, 0, 0,
-				0, -1, 0,
-				0, 0, 1,
+		-1, 0, 0,
+		0, -1, 0,
+		0, 0, 1,
 
-				-1, 0, 0,
-				0, -1, 0,
-				0, 0, -1,
-			];
+		-1, 0, 0,
+		0, -1, 0,
+		0, 0, -1,
+	];
 
 	var cubeIndices = [
 		0, 3, 6, 	6, 3, 9,		//right
@@ -186,4 +184,15 @@ function initCube()
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
 	cubeVertexNormalBuffer.itemSize = 3;
 	cubeVertexNormalBuffer.numItems = 24;
+
+	drawCube = function(context){
+		gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexColorBuffer);
+		gl.vertexAttribPointer(context.shader.vertexColorAttribute, cubeVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexBuffer);
+		gl.vertexAttribPointer(context.shader.vertexPositionAttribute, cubeVertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
+
+		gl.drawElements(gl.TRIANGLES, cubeVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+	};
 }

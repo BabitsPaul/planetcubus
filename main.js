@@ -27,6 +27,7 @@ loadResources({
 	initUI(gl.canvas);
 
 	//init structures for rendering
+	initCoordSys();
 	initCube();
 	buildSceneGraph();
 
@@ -40,16 +41,11 @@ function expandSG()
 
 	//node that renders cube                         //TESTING PURPOSE ONLY
 	sg.drawCube = function(){
-		return sg.draw(function(context){
-			gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexColorBuffer);
-			gl.vertexAttribPointer(context.shader.vertexColorAttribute, cubeVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
+		return sg.draw(drawCube);
+	};
 
-			gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexBuffer);
-			gl.vertexAttribPointer(context.shader.vertexPositionAttribute, cubeVertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
-			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
-
-			gl.drawElements(gl.TRIANGLES, cubeVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
-		});
+	sg.drawCoordSys = function(){					//TESTING PURPOSE ONLY
+		return sg.draw(drawCoordSys);
 	};
 }
 
@@ -75,15 +71,17 @@ var root;
 
 function buildSceneGraph()
 {
-	root = cameraNode();
+	root = sg.root();
+
+	//root.append(sg.drawCoordSys);
+	root.append(cameraTransformNode);
 
 	//center of solar system
 	var center = sg.translate(0, 0, -9);
-	root.append(center);
+	cameraTransformNode.append(center);
 
-	center.append(sg.drawCube());
+	center.append(createObject(sg.drawCube(), 1, 45, 45));
 
-	/*
 	var planet1 = createObject(sg.drawCube(), 1, 45, 45);
 	var planet1Orbit = createOrbitingObject(planet1, 4, 2, 20, 0);
 	center.append(planet1Orbit);
@@ -95,8 +93,9 @@ function buildSceneGraph()
 	var moon1_1 = createObject(sg.drawCube(), 0.5, 45, 45, 0.5, 0.5, 0.5);
 	var moon1_1Orbit = createOrbitingObject(moon1_1, 3, 0.5, 0, 0);
 	planet2.append(moon1_1Orbit);
-	*/
 }
+
+//TODO incorrectly appended, orbiting objects rely on rotation of object
 
 /*
 * obj: object that orbits around an implicit center (0,0,0)
@@ -185,6 +184,11 @@ function tick()
 
 function draw()
 {
+	drawCoordSys(context);
+
+	//refresh view matrix
+	updateViewMatrix(context);
+
 	//setup viewport and clear canvas
 	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);

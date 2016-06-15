@@ -2,15 +2,16 @@
 var rotateSensitivity = .003;
 var moveSensivity = .1;
 
-var cameraMat;
+var	cameraPosition,
+	cameraOrientation;
 
 var mouse;
 
-function cameraNode()
-{
-	var node = new TransformationSGNode(cameraMat);
+var cameraTransformNode;
 
-	return node;
+function updateViewMatrix(context)
+{
+	cameraTransformNode.matrix = mat4.multiply(mat4.create(), cameraPosition, cameraOrientation);
 }
 
 function initUI(canvas)
@@ -24,7 +25,10 @@ function initUI(canvas)
 		pressed: false
 	};
 
-	cameraMat = mat4.create();
+	cameraTransformNode = new TransformationSGNode(mat4.create());
+
+	cameraPosition = mat4.create();
+	cameraOrientation = mat4.create();
 
 	canvas.addEventListener('mousedown' , function(event){
 		mouse.pressed = true;
@@ -79,10 +83,14 @@ function initUI(canvas)
 
 /*
 * move camera by specified distance along x and z axis
+* takes current orientation and position into account
 */
 function moveCamera(dx, dz)
 {
-	mat4.translate(cameraMat, cameraMat, [dx * moveSensivity, 0, dz * moveSensivity]);
+	var move = mat4.translate(mat4.create(), mat4.create(), [dx * moveSensivity, 0, dz * moveSensivity]);
+	move = mat4.multiply(mat4.create(), move, cameraOrientation);
+
+	cameraPosition = mat4.multiply(mat4.create(), cameraPosition, move);
 }
 
 /*
@@ -91,6 +99,6 @@ function moveCamera(dx, dz)
 */
 function rotateCamera(dalpha, dbeta)
 {
-	mat4.rotateX(cameraMat, cameraMat, dalpha * rotateSensitivity);
-	mat4.rotateY(cameraMat, cameraMat, dbeta * rotateSensitivity);
+	cameraOrientation = mat4.rotateX(mat4.create(), cameraOrientation, dalpha * rotateSensitivity);
+	cameraOrientation = mat4.rotateY(mat4.create(), cameraOrientation, dbeta * rotateSensitivity);
 }
