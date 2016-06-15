@@ -79,7 +79,7 @@ function buildSceneGraph()
 	var center = sg.translate(0, 0, -9);
 	cameraTransformNode.append(center);
 
-	center.append(sg.draw(buildCylinder(2, 5, 40, [1, 0, 0, 1], [0, 1, 0, 1], [0, 0, 1, 1])));
+	center.append(sg.draw(buildCylinder(2, 5, 4, [1, 0, 0, 1], [0, 1, 0, 1], [0, 0, 1, 1])));
 
 	center.append(sg.drawCoordSys());
 

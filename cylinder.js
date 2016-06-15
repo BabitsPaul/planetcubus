@@ -6,8 +6,8 @@ function buildCylinder(radius, height, density, colorTop, colorSide, colorBottom
 
 	for(var i = 0; i < Math.PI * 2; i += Math.PI * 2 / density)
 	{
-		verticesTop.push(Math.cos(i), -height /2, Math.sin(i));
-		verticesBottom.push(Math.cos(i), height / 2, Math.sin(i));
+		verticesTop.push(Math.sin(i), -height /2, Math.cos(i));
+		verticesBottom.push(Math.sin(i), height / 2, Math.cos(i));
 	}
 
 	for(var i = 0; i <= Math.PI * 2; i += Math.PI * 2 / density)
@@ -38,40 +38,37 @@ function buildCylinder(radius, height, density, colorTop, colorSide, colorBottom
 		cylinderColorSideBuffer,
 		cylinderColorBottomBuffer;
 
-	if(colorTop && colorSide && colorBottom)
+	var topColorArr = [],
+		bottomColorArr = [];
+	for(var i = 0; i < cylinderTopBuffer.numItems; i++)
 	{
-		var topColorArr = [],
-			bottomColorArr = [];
-		for(var i = 0; i < cylinderTopBuffer.numItems; i++)
-		{
-			topColorArr.push(colorTop[0], colorTop[1], colorTop[2], colorTop[3]);
-			bottomColorArr.push(colorBottom[0], colorBottom[1], colorBottom[2], colorBottom[3]);
-		}
-
-		var sideColorArr = [];
-		for(var i = 0 ; i < cylinderSideBuffer.numItems ; i++)
-		{
-			sideColorArr.push(colorSide[0], colorSide[1], colorSide[2], colorSide[3]);
-		}
-
-		cylinderColorTopBuffer = gl.createBuffer();
-		gl.bindBuffer(gl.ARRAY_BUFFER, cylinderColorTopBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(topColorArr), gl.STATIC_DRAW);
-		cylinderColorTopBuffer.itemSize = 4;
-		cylinderColorTopBuffer.numItems = cylinderTopBuffer.numItems;
-
-		cylinderColorBottomBuffer = gl.createBuffer();
-		gl.bindBuffer(gl.ARRAY_BUFFER, cylinderColorBottomBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(bottomColorArr), gl.STATIC_DRAW);
-		cylinderColorBottomBuffer.itemSize = 4;
-		cylinderColorBottomBuffer.numItems = cylinderBottomBuffer.numItems;
-
-		cylinderColorSideBuffer = gl.createBuffer();
-		gl.bindBuffer(gl.ARRAY_BUFFER, cylinderColorSideBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sideColorArr), gl.STATIC_DRAW);
-		cylinderColorSideBuffer.itemSize = 4;
-		cylinderColorSideBuffer.numItems =  cylinderSideBuffer.numItems;
+		topColorArr.push(colorTop[0], colorTop[1], colorTop[2], colorTop[3]);
+		bottomColorArr.push(colorBottom[0], colorBottom[1], colorBottom[2], colorBottom[3]);
 	}
+
+	var sideColorArr = [];
+	for(var i = 0 ; i < cylinderSideBuffer.numItems ; i++)
+	{
+		sideColorArr.push(colorSide[0], colorSide[1], colorSide[2], colorSide[3]);
+	}
+
+	cylinderColorTopBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, cylinderColorTopBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(topColorArr), gl.STATIC_DRAW);
+	cylinderColorTopBuffer.itemSize = 4;
+	cylinderColorTopBuffer.numItems = cylinderTopBuffer.numItems;
+
+	cylinderColorBottomBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, cylinderColorBottomBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(bottomColorArr), gl.STATIC_DRAW);
+	cylinderColorBottomBuffer.itemSize = 4;
+	cylinderColorBottomBuffer.numItems = cylinderBottomBuffer.numItems;
+
+	cylinderColorSideBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, cylinderColorSideBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sideColorArr), gl.STATIC_DRAW);
+	cylinderColorSideBuffer.itemSize = 4;
+	cylinderColorSideBuffer.numItems =  cylinderSideBuffer.numItems;
 
 	var cylinder = {
 		top: cylinderTopBuffer,
